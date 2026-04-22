@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 320px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #1e1e1e; color: #ccc; padding: 16px;
+  }
+  .header {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 14px; padding-bottom: 12px;
+    border-bottom: 1px solid #333;
+  }
+  .header-icon {
+    width: 28px; height: 28px; border-radius: 7px;
+    background: linear-gradient(135deg, #06090f, #162240);
+    border: 1px solid #333;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 7px; font-weight: 700; color: #06090f;
+  }
+  .header-icon span { background: #0ACF83; padding: 1px 3px; border-radius: 2px; }
+  .header h1 { font-size: 13px; color: #fff; }
+  .header p { font-size: 10px; color: #666; }
+
+  .settings { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+  .setting {
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 11px; color: #aaa;
+  }
+  .setting input[type="number"] {
+    width: 50px; background: #252525; color: #fff;
+    border: 1px solid #444; border-radius: 4px;
+    padding: 4px 6px; font-size: 11px; text-align: center;
+  }
+  .setting label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+  .setting input[type="checkbox"] { accent-color: #0ACF83; }
+
+  .capture-btn {
+    width: 100%; padding: 11px; border: none; border-radius: 8px;
+    background: #0ACF83; color: #000; font-size: 13px; font-weight: 700;
+    cursor: pointer; transition: all .15s; letter-spacing: .02em;
+  }
+  .capture-btn:hover { background: #00c47e; }
+  .capture-btn:disabled { opacity: 0.4; cursor: wait; }
+  .capture-btn.done { background: #252525; color: #0ACF83; }
+
+  .status {
+    text-align: center; font-size: 11px; color: #666;
+    margin-top: 10px; min-height: 16px;
+  }
+  .status.ok { color: #0ACF83; }
+  .status.err { color: #ff5c5c; }
+  .status.warn { color: #f5a623; }
+
+  .actions {
+    display: flex; gap: 8px; margin-top: 10px;
+  }
+  .action-btn {
+    flex: 1; padding: 8px; border: 1px solid #444; border-radius: 6px;
+    background: none; color: #aaa; font-size: 11px; cursor: pointer;
+    transition: all .15s; text-align: center;
+  }
+  .action-btn:hover { border-color: #0ACF83; color: #0ACF83; }
+  .action-btn:disabled { opacity: 0.3; cursor: default; }
+
+  .footer {
+    margin-top: 14px; padding-top: 10px; border-top: 1px solid #333;
+    font-size: 10px; color: #555; text-align: center;
+  }
+  .footer a { color: #666; text-decoration: none; }
+  .footer a:hover { color: #0ACF83; }
+
+  .progress-bar {
+    height: 3px; background: #333; border-radius: 2px;
+    margin-top: 8px; overflow: hidden; display: none;
+  }
+  .progress-bar.active { display: block; }
+  .progress-fill {
+    height: 100%; background: #0ACF83; border-radius: 2px;
+    transition: width .3s; width: 0%;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-icon"><span>.pen</span></div>
+  <div>
+    <h1>Capture Page</h1>
+    <p>Export this page for Figma</p>
+  </div>
+</div>
+
+<div class="settings">
+  <div class="setting">
+    <span>Max depth</span>
+    <input type="number" id="maxDepth" value="15" min="1" max="50">
+  </div>
+  <div class="setting">
+    <label><input type="checkbox" id="includeText" checked> Include text</label>
+  </div>
+  <div class="setting">
+    <label><input type="checkbox" id="includeImages" checked> Include images</label>
+  </div>
+  <div class="setting">
+    <label><input type="checkbox" id="skipHidden" checked> Skip hidden elements</label>
+  </div>
+  <div class="setting">
+    <label><input type="checkbox" id="fullPage" checked> Full page (scroll height)</label>
+  </div>
+</div>
+
+<button class="capture-btn" id="captureBtn">Capture This Page</button>
+<div class="progress-bar" id="progressBar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="status" id="status"></div>
+
+<div class="actions">
+  <button class="action-btn" id="downloadBtn" disabled>Download .json</button>
+  <button class="action-btn" id="copyBtn" disabled>Copy to clipboard</button>
+</div>
+
+<div class="footer">
+  <a href="https://cloverxlimited.github.io/pen-to-figma/" target="_blank">Pen to Figma Importer</a> &middot;
+  <a href="https://github.com/cloverxlimited/pen-to-figma-importer" target="_blank">GitHub</a>
+</div>
+
+<script src="popup.js"></script>
+</body>
+</html>
