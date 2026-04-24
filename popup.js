@@ -326,19 +326,42 @@ function captureDOM(opts) {
         if (!node.layout && children.length > 1) node.layout = 'vertical';
       }
 
+      // Determine if this frame has visual styling worth keeping
+      var hasVisual = node.fill || node.stroke || node.effect || node.cornerRadius || node.clip;
+      var hasOwnOpacity = op < 1 && op > 0;
+
+      // Count meaningful descendants (text or visually styled frames)
+      function hasMeaningfulContent(n) {
+        if (n.type === 'text') return true;
+        if (n.type === 'rectangle') return true;
+        if (n.fill || n.stroke || n.effect || n.cornerRadius) return true;
+        if (n.children) {
+          for (var ci = 0; ci < n.children.length; ci++) {
+            if (hasMeaningfulContent(n.children[ci])) return true;
+          }
+        }
+        return false;
+      }
+
+      // Skip large decorative/overlay divs with no meaningful content
+      // (e.g., hero backgrounds, overlay layers, animation containers)
+      if (!hasVisual && children.length === 0) return null;
+      if (hasOwnOpacity && !hasVisual && children.length === 0) return null;
+      if (children.length === 0 && !hasVisual && !hasOwnOpacity) return null;
+
+      // Large viewport-sized frames with no text and no fills are likely overlays
+      var isLargeEmpty = node.width >= 1000 && node.height >= 400 && !hasMeaningfulContent(node) && !hasVisual;
+      if (isLargeEmpty) return null;
+
       // Collapse text-only wrappers
-      var hasVisual = node.fill || node.stroke || node.effect || node.cornerRadius || (op < 1 && op > 0) || node.clip;
-      if (children.length === 1 && children[0].type === 'text' && !hasVisual) {
+      if (children.length === 1 && children[0].type === 'text' && !hasVisual && !hasOwnOpacity) {
         var merged = children[0];
         if (node.width && !merged.width) { merged.textGrowth = 'fixed-width'; merged.width = node.width; }
         return merged;
       }
 
-      // Remove empty invisible frames
-      if (!hasVisual && children.length === 0) return null;
-
       // Unwrap single-child invisible wrappers
-      if (!hasVisual && children.length === 1 && !node.layout && !node.padding) {
+      if (!hasVisual && !hasOwnOpacity && children.length === 1 && !node.layout && !node.padding) {
         var only = children[0];
         if (!only.width && node.width) only.width = node.width;
         if (!only.height && node.height) only.height = node.height;
